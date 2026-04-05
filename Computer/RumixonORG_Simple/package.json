@@ -1,0 +1,25 @@
+{
+  "name": "rumixonorg_simple",
+  "version": "1.0.0",
+  "description": "The Official site for Student Community by Rumixon Corp",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RumixonElectro/RumionORG_Basic.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RumixonElectro/RumionORG_Basic/issues"
+  },
+  "homepage": "https://github.com/RumixonElectro/RumionORG_Basic#readme",
+  "devDependencies": {
+    "autop": "^1.0.1",
+    "cssnano": "^6.0.1",
+    "postcss": "^8.4.31",
+    "postcss-cli": "^10.1.0"
+  }
+}
