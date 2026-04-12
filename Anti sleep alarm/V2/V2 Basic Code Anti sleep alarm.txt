@@ -1,0 +1,27 @@
+﻿int sensor = 8;
+int buzzer = 11;
+int motor = 6;
+void setup()
+{
+ 
+  pinMode(buzzer, OUTPUT);
+  pinMode(sensor,INPUT);
+  pinMode(motor,OUTPUT);
+  digitalWrite(motor,HIGH);
+}
+
+// the loop function runs over and over again forever
+void loop() {
+  if(digitalRead(sensor)==1)
+  {
+    digitalWrite(11,LOW);
+    digitalWrite(motor,HIGH);
+  }
+  else
+  {
+    delay(3000);
+    digitalWrite(11,HIGH);
+    digitalWrite(motor,LOW);
+  }
+  
+}

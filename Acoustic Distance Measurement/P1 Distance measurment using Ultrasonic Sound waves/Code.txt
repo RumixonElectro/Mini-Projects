@@ -1,0 +1,55 @@
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+LiquidCrystal_I2C lcd(32,16,2);
+int t=3000;
+
+// Define pins for the ultrasonic sensor
+const int trigPin = 2;
+const int echoPin = 3;
+
+// Define variables to store distance and duration
+long duration;
+float distance;
+
+
+void setup() {
+  lcd.begin(16,2);
+  lcd.init();
+  lcd.backlight();
+  
+  Serial.begin(9600);
+  Serial.begin(9600);
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+}
+
+void loop() {
+  // Clear the trigPin
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  
+  // Set the trigPin high for 10 microseconds
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(20);
+  digitalWrite(trigPin, LOW);
+  
+  // Read the echoPin, and calculate the duration of the pulse
+  duration = pulseIn(echoPin, HIGH);
+  
+  // Calculate the distance
+  distance = duration * 0.03445 / 2;
+  
+  // Print the distance to the serial monitor
+  Serial.print("Distance: ");
+  Serial.print(distance);
+  Serial.println(" cm");
+  
+  // Print the distance on the LCD
+  lcd.setCursor(0,0);
+  lcd.print("Distance:");
+  lcd.print(distance);
+  lcd.print(" cm      "); // To clear any characters from previous display
+  
+  // Wait a short time before taking another measurement
+  delay(100);
+}

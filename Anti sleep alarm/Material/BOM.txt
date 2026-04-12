@@ -1,0 +1,20 @@
+Bill of Material (BOM)
+---------------------------------------------------------------------------- 
+Part Value       Device          Package      Description
+----------------------------------------------------------------------------      
+C1   22pF        C-USC1206       C1206        CAPACITOR, American symbol          
+C2   22pF        C-USC1206       C1206        CAPACITOR, American symbol          
+C3   0.1uF       C-USC0805       C0805        CAPACITOR, American symbol          
+C4   0.1uF       C-USC0805       C0805        CAPACITOR, American symbol          
+C5   0.1uF       C-USC0805       C0805        CAPACITOR, American symbol          
+CN1              HDR-1X6-SIP-100 SIP-100-6V   HEADER CONNECTOR                    
+CN2              HDR-1X5-SIP-100 SIP-100-5V   HEADER CONNECTOR                    
+JP1  AVR-ISP-6   AVR-ISP-6       AVR-ISP-6    AVR ISP-6 Serial Programming Header 
+LED1 Yellow      LEDCHIP-LED0805 CHIP-LED0805 LED                                 
+Q1   16MHz       CRYTALHC49S     HC49/S       CRYSTAL                             
+R1   10K         R-US_R1206      R1206        RESISTOR, American symbol           
+R2   1K          R-US_R1206      R1206        RESISTOR, American symbol           
+SW1  KSS-2EG4430 KSS-2EG4430     KSS-2EG4430  Size: 3x6mm (Push button switch)    
+U$1  PINHD-1X10  PINHD-1X10      1X10-BIG     Pin header 1x10 0.1" spacing        
+U$2  PINHD-1X10  PINHD-1X10      1X10-BIG     Pin header 1x10 0.1" spacing        
+U1   ATMEGA328   ATMEGA328       TQFP32-08    ATmega328P-AU TQFP 32 pin           

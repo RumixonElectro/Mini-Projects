@@ -1,0 +1,67 @@
+﻿//Arduino Pro Mini (Transmitter):
+
+#include <SPI.h>
+#include <nRF24L01.h>
+#include <RF24.h>
+
+RF24 radio(9, 10); // CE, CSN pins
+const byte address[6] = "00001"; // Address for the communication
+
+int sensor = 8;
+
+void setup() {
+  pinMode(sensor, INPUT);
+  radio.begin();
+}
+
+void loop() {
+  if (digitalRead(sensor) == HIGH) {
+    sendCommand('1'); // Send command to Arduino Uno to set motor pin high and buzzer pin low
+  } else {
+    sendCommand('0'); // Send command to Arduino Uno to set motor pin low and buzzer pin high
+  }
+  delay(1000); // Adjust delay as needed
+}
+
+void sendCommand(char command) {
+  radio.openWritingPipe(address);
+  radio.write(&command, sizeof(command));
+}
+
+
+
+
+
+//Arduino Uno (Receiver):
+
+#include <SPI.h>
+#include <nRF24L01.h>
+#include <RF24.h>
+
+RF24 radio(9, 10); // CE, CSN pins
+const byte address[6] = "00001"; // Address for the communication
+
+int buzzer = 11;
+int motor = 6;
+
+void setup() {
+  pinMode(buzzer, OUTPUT);
+  pinMode(motor, OUTPUT);
+  radio.begin();
+  radio.openReadingPipe(1, address);
+  radio.startListening();
+}
+
+void loop() {
+  if (radio.available()) {
+    char command;
+    radio.read(&command, sizeof(command));
+    if (command == '1') {
+      digitalWrite(motor, HIGH);
+      digitalWrite(buzzer, LOW);
+    } else if (command == '0') {
+      digitalWrite(motor, LOW);
+      digitalWrite(buzzer, HIGH);
+    }
+  }
+}
