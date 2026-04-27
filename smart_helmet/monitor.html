@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Rumixon IoTech | Smart Helmet Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .status-card {
+            transition: all 0.4s ease;
+            border-width: 2px;
+        }
+
+        .active-glow {
+            box-shadow: 0 0 20px rgba(34, 197, 94, 0.4);
+            border-color: #22c55e;
+            background-color: rgba(34, 197, 94, 0.05);
+        }
+
+        .danger-glow {
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
+            border-color: #ef4444;
+            background-color: rgba(239, 68, 68, 0.05);
+        }
+    </style>
+</head>
+
+<body class="bg-slate-900 text-white min-h-screen p-10 font-sans">
+
+    <div class="max-w-5xl mx-auto">
+        <header class="text-center mb-16">
+            <h1 class="text-5xl font-black text-blue-500 tracking-tight">RUMIXON IOTECH</h1>
+            <p class="text-slate-400 mt-2 uppercase tracking-widest text-xs">Smart Helmet Monitoring System</p>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div id="card-helmet" class="status-card bg-slate-800 p-10 rounded-[2rem] border-slate-700 text-center">
+                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Helmet Status</span>
+                <div id="val-helmet" class="text-3xl font-bold mt-4 text-slate-600">OFFLINE</div>
+            </div>
+
+            <div id="card-alcohol" class="status-card bg-slate-800 p-10 rounded-[2rem] border-slate-700 text-center">
+                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Alcohol Level</span>
+                <div id="val-alcohol" class="text-6xl font-mono font-bold text-blue-400 mt-2">0</div>
+                <div class="text-[10px] text-slate-500 mt-2">THRESHOLD: 660</div>
+            </div>
+
+            <div id="card-bike" class="status-card bg-slate-800 p-10 rounded-[2rem] border-slate-700 text-center">
+                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Ignition State</span>
+                <div id="val-bike" class="text-3xl font-bold mt-4 text-slate-600">OFF</div>
+            </div>
+        </div>
+
+        <div class="flex justify-center mt-20">
+            <button id="connectBtn"
+                class="bg-blue-600 hover:bg-blue-500 px-12 py-5 rounded-2xl font-black text-sm tracking-widest transition-all">
+                INITIALIZE SYSTEM
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let port;
+        const threshold = 660;
+        const connectBtn = document.getElementById('connectBtn');
+
+        window.addEventListener('load', async () => {
+            const ports = await navigator.serial.getPorts();
+            if (ports.length > 0) {
+                port = ports[0];
+                startSerial();
+            }
+        });
+
+        connectBtn.addEventListener('click', async () => {
+            try {
+                port = await navigator.serial.requestPort();
+                startSerial();
+            } catch (err) { console.log("Selection cancelled"); }
+        });
+
+        async function startSerial() {
+            try {
+                await port.open({ baudRate: 9600 });
+                connectBtn.classList.add('hidden');
+
+                const textDecoder = new TextDecoderStream();
+                const reader = textDecoder.readable.getReader();
+                port.readable.pipeTo(textDecoder.writable);
+
+                let buffer = "";
+                while (true) {
+                    const { value, done } = await reader.read();
+                    if (done) break;
+                    buffer += value;
+                    if (buffer.includes("\n")) {
+                        let lines = buffer.split("\n");
+                        buffer = lines.pop();
+                        lines.forEach(line => {
+                            if (line.trim().startsWith("{")) {
+                                try { updateUI(JSON.parse(line.trim())); } catch (e) { }
+                            }
+                        });
+                    }
+                }
+            } catch (err) { console.error(err); }
+        }
+
+        function updateUI(data) {
+            const isHelmetOn = (data.helmet === true);
+            const isSober = (data.alcohol <= threshold);
+            const isRunning = (data.bike === true);
+
+            // 1. Helmet Status
+            const hVal = document.getElementById('val-helmet');
+            const hCard = document.getElementById('card-helmet');
+            hVal.innerText = isHelmetOn ? "DETECTED" : "NOT DETECTED";
+            hVal.className = `text-3xl font-bold mt-4 ${isHelmetOn ? 'text-green-400' : 'text-red-500'}`;
+            hCard.className = `status-card bg-slate-800 p-10 rounded-[2rem] border-2 ${isHelmetOn ? 'active-glow' : 'danger-glow'}`;
+
+            // 2. Alcohol Level
+            const aVal = document.getElementById('val-alcohol');
+            const aCard = document.getElementById('card-alcohol');
+            aVal.innerText = data.alcohol;
+            aCard.className = `status-card bg-slate-800 p-10 rounded-[2rem] border-2 ${isSober ? 'active-glow' : 'danger-glow'}`;
+
+            // 3. Ignition State (Red Glow for Restricted)
+            const bVal = document.getElementById('val-bike');
+            const bCard = document.getElementById('card-bike');
+
+            if (isRunning) {
+                bVal.innerText = "RUNNING";
+                bVal.className = "text-3xl font-bold mt-4 text-green-400";
+                bCard.className = "status-card bg-slate-800 p-10 rounded-[2rem] border-2 active-glow";
+            } else if (!isHelmetOn || !isSober) {
+                bVal.innerText = "RESTRICTED";
+                bVal.className = "text-3xl font-bold mt-4 text-red-500";
+                bCard.className = "status-card bg-slate-800 p-10 rounded-[2rem] border-2 danger-glow";
+            } else {
+                bVal.innerText = "STOPPED";
+                bVal.className = "text-3xl font-bold mt-4 text-slate-500";
+                bCard.className = "status-card bg-slate-800 p-10 rounded-[2rem] border-2 border-slate-700";
+            }
+        }
+    </script>
+</body>
+
+</html>
