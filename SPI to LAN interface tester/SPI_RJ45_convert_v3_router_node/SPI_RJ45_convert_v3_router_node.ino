@@ -40,7 +40,7 @@ void setup() {
   Ethernet.init(CS_PIN);
 
   lcd.setCursor(0, 1);
-  // Request an IP from your Windows Desktop
+  // Request an IP from your Windows LAN tester
   if (Ethernet.begin(mac) == 0) {
     lcd.print(F("DHCP Timeout"));
     delay(1000);
@@ -106,5 +106,5 @@ void showIdleScreen() {
   lcd.clear();
   lcd.print(Ethernet.localIP()); 
   lcd.setCursor(0, 1);
-  lcd.print(F("V3 Desktop Ready"));
+  lcd.print(F("LAN tester Ready"));
 }
